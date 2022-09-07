@@ -63,6 +63,15 @@ void execute(CPU *cpu) {
             fSetFlags(cpu, cpu->r_floatRegisters[cpu->i_destination - 8], (float64) cpu->r_floatRegisters[cpu->i_source - 8]);
             cpu->r_programCounter += 2;
             break;
+        case MOV:
+            cpu->r_registers[cpu->i_destination] = cpu->r_registers[cpu->i_source];
+            cpu->r_programCounter += 2;
+            break;
+        case MOVF:
+            cpu->r_floatRegisters[cpu->i_destination - 8] = cpu->r_floatRegisters[cpu->i_source - 8];
+            cpu->r_programCounter += 2;
+            break;
+        
     }
 }
 
