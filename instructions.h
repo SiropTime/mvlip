@@ -2,7 +2,7 @@
 #define INSTRUCTIONS_H
 
 enum instructions {
-	CLF,
+	CLF, CMP, CMPI, CMPF, CMPFI,
 	MOV, MOVF,
 	STI, STF, LDI, LDF,
 	LII, LIF,

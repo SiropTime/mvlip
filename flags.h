@@ -9,15 +9,15 @@ void clearFlags(CPU *cpu) {
 
 }
 
-void setFlags(CPU *cpu, uint64 destination) {
-    cpu->f_zero = (dest == 0);
-    cpu->f_gtz = (dest > 0);
-    cpu->f_ltz = (dest < 0);
+void setFlags(CPU *cpu, uint64 destination, uint64 source) {
+    cpu->f_zero = (destination - source == 0);
+    cpu->f_gtz = (destination - source > 0);
+    cpu->f_ltz = (destination - source < 0);
 }
 
-void fSetFlags(CPU *cpu, float64 destination) {
-    cpu->f_zero = (dest == 0);
-    cpu->f_gtz = (dest > 0);
-    cpu->f_ltz = (dest < 0);
+void fSetFlags(CPU *cpu, float64 destination, float64 source) {
+    cpu->f_zero = (destination - source == 0);
+    cpu->f_gtz = (destination - source > 0);
+    cpu->f_ltz = (destination - source < 0);
 }
 #endif // FLAGS_H
