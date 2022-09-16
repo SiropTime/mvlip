@@ -1,23 +1,28 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
-void clearFlags(CPU *cpu) {
-    cpu->f_zero = 0;
-    cpu->f_gtz = 0;
-    cpu->f_ltz = 0;
-    cpu->f_int = 0;
+enum
+{
+    FL_POS = 1 << 0, /* P */
+    FL_ZRO = 1 << 1, /* Z */
+    FL_NEG = 1 << 2, /* N */
+};
 
+void update_flags(uint16_t r)
+{
+    if (reg[r] == 0)
+    {
+        reg[r_COND] = FL_ZRO;
+
+    }
+    else if (reg[r] >> 15) /* Checking first from left byte for negative number */
+    {
+        reg[r_COND] = FL_NEG;
+    }
+    else
+    {
+        reg[r_COND] = FL_POS;
+    }
 }
 
-void setFlags(CPU *cpu, uint64 destination, uint64 source) {
-    cpu->f_zero = (destination - source == 0);
-    cpu->f_gtz = (destination - source > 0);
-    cpu->f_ltz = (destination - source < 0);
-}
-
-void fSetFlags(CPU *cpu, float64 destination, float64 source) {
-    cpu->f_zero = (destination - source == 0);
-    cpu->f_gtz = (destination - source > 0);
-    cpu->f_ltz = (destination - source < 0);
-}
-#endif // FLAGS_H
+#endif
