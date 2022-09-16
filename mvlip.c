@@ -15,6 +15,7 @@ Copy of LC-3 architecture virtual machine
 #include "flags.h"
 #include "instructions.h"
 #include "utility.h"
+#include "traps.h"
 
 HANDLE hStdin = INVALID_HANDLE_VALUE;
 DWORD fdwMode, fdwOldMode;
@@ -102,37 +103,117 @@ int main(int argc, const char* argv[])
             update_flags(r0);
             break;
         case op_AND:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t r1 = (instr >> 6) & 0x7;
+            uint16_t imm_flag = (instr >> 5) & 0x1;
+
+            if (imm_flag)
+            {
+                uint16_t imm5 = sign_extend(instr & 0x1f, 5);
+                reg[r0] = reg[r1] & imm5;
+            }
+            else
+            {
+                uint16_t r2 = instr & 0x7;
+                reg[r0] = reg[r1] & reg[r2];
+            }
+
+            update_flags(r0);
             break;
         case op_NOT:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t r1 = (instr >> 6) & 0x7;
+
+            reg[r0] = ~reg[r1];
+            
+            update_flags(r0);
             break;
         case op_BR:
+            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+            uint16_t cond_flag = (instr >> 9) & 0x7;
+            if (cond_flag & reg[r_COND])
+            {
+                reg[r_PC] += pc_offset;
+            }
+
             break;
         case op_JMP:
+            uint16_t r1 = (instr >> 6) & 0x7;
+            reg[r_PC] = reg[r1];
+
             break;
         case op_JSR:
+            uint16_t long_flag = (instr >> 1) & 1;
+            reg[r_R7] = reg[r_PC];
+            if (long_flag)
+            {
+                uint16_t long_pc_offset = sign_extend(instr & 0x7FF, 11);
+                reg[r_PC] += long_pc_offset; /* JSR */
+            }
+            else
+            {
+                uint16_t r1 = (instr >> 6) & 0x7;
+                reg[r_PC] = reg[r1]; /* JSRR */
+            }
+
             break;
         case op_LD:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+            reg[r0] = mem_read(reg[r_PC] + pc_offset);
+
+            update_flags(r0);
+
             break;
         case op_LDI:
             break;
         case op_LDR:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t r1 = (instr >> 6) & 0x7;
+            uint16_t offset = sign_extend(instr & 0x3F, 6);
+            reg[r0] = mem_read(reg[r1] + offset);
+            
+            update_flags(r0);
+
             break;
         case op_LEA:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+            reg[r0] = reg[r_PC] + pc_offset;
+
+            update_flags(r0);
+
             break;
         case op_ST:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+            mem_write(reg[r_PC] + pc_offset, reg[r0]);
+
             break;
         case op_STI:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+            mem_write(mem_read(reg[r_PC] + pc_offset), reg[r0]);
+
             break;
         case op_STR:
+            uint16_t r0 = (instr >> 9) & 0x7;
+            uint16_t r1 = (instr >> 6) & 0x7;
+            uint16_t offset = sign_extend(instr & 0x3F, 6);
+
+            mem_write(reg[r1] + offset, reg[r0]);
+
             break;
         case op_TRAP:
+
+            process_traps(instr, &running);
             break;
         case op_RES:
-            break;
+            abort();
         case op_RTI:
-            break;
+            abort();
         default:
-            /* Bad opcode */
+            abort();
             break;
         }
         
