@@ -1,7 +1,9 @@
 /*
 
-Main file
-Copy of LC-3 architecture virtual machine
+    Main file
+    Copy of LC-3 architecture virtual machine
+
+    No copyright, just fun :)
 
 */
 
@@ -17,30 +19,7 @@ Copy of LC-3 architecture virtual machine
 #include "utility.h"
 #include "traps.h"
 
-HANDLE hStdin = INVALID_HANDLE_VALUE;
-DWORD fdwMode, fdwOldMode;
 
-void disable_input_buffering()
-{
-    hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    GetConsoleMode(hStdin, &fdwOldMode); /* save old mode */
-    fdwMode = fdwOldMode
-            ^ ENABLE_ECHO_INPUT  /* no input echo */
-            ^ ENABLE_LINE_INPUT; /* return when one or
-                                    more characters are available */
-    SetConsoleMode(hStdin, fdwMode); /* set new mode */
-    FlushConsoleInputBuffer(hStdin); /* clear buffer */
-}
-
-void restore_input_buffering()
-{
-    SetConsoleMode(hStdin, fdwOldMode);
-}
-
-uint16_t check_key()
-{
-    return WaitForSingleObject(hStdin, 1000) == WAIT_OBJECT_0 && _kbhit();
-}
 
 int main(int argc, const char* argv[])
 {
@@ -62,6 +41,8 @@ int main(int argc, const char* argv[])
 
     /* Setup */
     reg[r_COND] = FL_ZRO;
+    signal(SIGINT, handle_interrupt);
+    disable_input_buffering();
 
     /* Setting program counter to default starting position */
     enum
@@ -220,5 +201,5 @@ int main(int argc, const char* argv[])
     }
 
     /* Shutdown */
-    
+    restore_input_buffering();
 }
