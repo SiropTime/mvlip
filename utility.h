@@ -23,20 +23,6 @@ uint16_t swap16(uint16_t x)
     return (x << 8) | (x >> 8);
 }
 
-int read_image(const char* image_path)
-{
-    FILE* file = fopen(image_path, "rb");
-    if (!file)
-    {
-        return 0;
-    }
-
-    read_image_file(file);
-    fclose(file);
-
-    return 1;
-}
-
 void read_image_file(FILE* file)
 {
     
@@ -54,6 +40,21 @@ void read_image_file(FILE* file)
         ++p;
     }
 }
+
+int read_image(const char* image_path)
+{
+    FILE* file = fopen(image_path, "rb");
+    if (!file)
+    {
+        return 0;
+    }
+
+    read_image_file(file);
+    fclose(file);
+
+    return 1;
+}
+
 
 HANDLE hStdin = INVALID_HANDLE_VALUE;
 DWORD fdwMode, fdwOldMode;

@@ -18,6 +18,60 @@ enum
     TRAP_HALT = 0x25   /* halt the program */
 };
 
+void trap_getc()
+{
+    reg[r_R0] = (uint16_t) getchar();
+    update_flags(r_R0);
+}
+
+void trap_out()
+{
+    putc((char) reg[r_R0], stdout);
+    fflush(stdout);
+}
+
+void trap_puts()
+{
+    uint16_t* c = memory + reg[r_R0];
+    while (*c)
+    {
+        putc((char) *c, stdout);
+        ++c;
+    }
+
+    fflush(stdout);
+}
+
+void trap_in()
+{
+    printf("Enter a character: ");
+    char ch = getchar();
+    putc(ch, stdout);
+    fflush(stdout);
+
+    reg[r_R0] = (uint16_t) ch;
+
+    update_flags(r_R0);
+
+}
+
+void trap_putsp()
+{
+    uint16_t* c = memory + reg[r_R0];
+    
+    while (*c)
+    {
+        char ch1 = (*c) & 0xFF;
+        putc(ch1, stdout);
+        char ch2 = (*c) >> 8;
+        if (ch2) putc(ch2, stdout);
+        ++c;
+    }
+    
+    fflush(stdout);
+
+}
+
 void process_traps(uint16_t instr, int *p_running)
 {
     reg[r_R7] = reg[r_PC];
@@ -25,50 +79,23 @@ void process_traps(uint16_t instr, int *p_running)
     switch (instr & 0xFF)
     {
     case TRAP_GETC:
-        reg[r_R0] = (uint16_t) getchar();
-        update_flags(r_R0);
-
+        trap_getc();
+        
         break;
     case TRAP_OUT:
-        putc((char) reg[r_R0], stdout);
-        fflush(stdout);
+        trap_out();
         
         break;
     case TRAP_PUTS:
-        uint16_t* c = memory + reg[r_R0];
-        while (*c)
-        {
-            putc((char) *c, stdout);
-            ++c;
-        }
-
-        fflush(stdout);
+        trap_puts();
 
         break;
     case TRAP_IN:
-        printf("Enter a character: ");
-        char ch = getchar();
-        putc(ch, stdout);
-        fflush(stdout);
-
-        reg[r_R0] = (uint16_t) c;
-
-        update_flags(r_R0);
+        trap_in();
 
         break;
     case TRAP_PUTSP:
-        uint16_t* c = memory + reg[r_R0];
-        
-        while (*c)
-        {
-            char ch1 = (*c) & 0xFF;
-            putc(ch1, stdout);
-            char ch2 = (*c) >> 8;
-            if (ch2) putc(ch2, stdout);
-            ++c;
-        }
-        
-        fflush(stdout);
+        trap_putsp();
 
         break;
     case TRAP_HALT:
