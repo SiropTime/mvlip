@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <Windows.h>
+#include <conio.h>
+#include <signal.h>
 
 #include "memory.h"
 

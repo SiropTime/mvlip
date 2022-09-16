@@ -10,8 +10,8 @@
 /* Includes */
 #include <stdio.h>
 #include <signal.h>
-#include <Windows.h>
-#include <conio.h>  // _kbhit
+
+  // _kbhit
 
 #include "registers.h"
 #include "flags.h"
