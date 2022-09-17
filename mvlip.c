@@ -64,117 +64,47 @@ int main(int argc, const char* argv[])
         {
         case op_ADD:
             /* Destination */
-            uint16_t r0 = (instr >> 9) & 0x7;
-            /* First operand */
-            uint16_t r1 = (instr >> 6) & 0x7;
-            /* Whether we are in immediate mode */
-            uint16_t imm_flag = (instr >> 5) & 0x1;
-
-            if (imm_flag)
-            {
-                /* If that's true we adding integer (5 bits) from the instruction */
-                uint16_t imm5 = sign_extend(instr & 0x1F, 5);
-                reg[r0] = reg[r1] + imm5;
-            } else {
-                /* Else we getting register and sum with another */
-                uint16_t r2 = instr & 0x7;
-                reg[r0] = reg[r1] + reg[r2];
-            }
-
-            update_flags(r0);
+            op_add(instr);
             break;
         case op_AND:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t r1 = (instr >> 6) & 0x7;
-            uint16_t imm_flag = (instr >> 5) & 0x1;
-
-            if (imm_flag)
-            {
-                uint16_t imm5 = sign_extend(instr & 0x1f, 5);
-                reg[r0] = reg[r1] & imm5;
-            }
-            else
-            {
-                uint16_t r2 = instr & 0x7;
-                reg[r0] = reg[r1] & reg[r2];
-            }
-
-            update_flags(r0);
+            op_and(instr);
             break;
         case op_NOT:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t r1 = (instr >> 6) & 0x7;
+            op_not(instr);
 
-            reg[r0] = ~reg[r1];
-            
-            update_flags(r0);
             break;
         case op_BR:
-            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
-            uint16_t cond_flag = (instr >> 9) & 0x7;
-            if (cond_flag & reg[r_COND])
-            {
-                reg[r_PC] += pc_offset;
-            }
+            op_not(instr);
 
             break;
         case op_JMP:
-            uint16_t r1 = (instr >> 6) & 0x7;
-            reg[r_PC] = reg[r1];
+            op_jmp(instr);
 
             break;
         case op_JSR:
-            uint16_t long_flag = (instr >> 1) & 1;
-            reg[r_R7] = reg[r_PC];
-            if (long_flag)
-            {
-                uint16_t long_pc_offset = sign_extend(instr & 0x7FF, 11);
-                reg[r_PC] += long_pc_offset; /* JSR */
-            }
-            else
-            {
-                uint16_t r1 = (instr >> 6) & 0x7;
-                reg[r_PC] = reg[r1]; /* JSRR */
-            }
+            op_jsr(instr);
 
             break;
         case op_LD:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
-            reg[r0] = mem_read(reg[r_PC] + pc_offset);
-
-            update_flags(r0);
+            op_ld(instr);
 
             break;
         case op_LDI:
             break;
         case op_LDR:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t r1 = (instr >> 6) & 0x7;
-            uint16_t offset = sign_extend(instr & 0x3F, 6);
-            reg[r0] = mem_read(reg[r1] + offset);
-            
-            update_flags(r0);
+            op_ldr(instr);
 
             break;
         case op_LEA:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
-            reg[r0] = reg[r_PC] + pc_offset;
-
-            update_flags(r0);
+            op_lea(instr);
 
             break;
         case op_ST:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
-            mem_write(reg[r_PC] + pc_offset, reg[r0]);
+            op_st(instr);
 
             break;
         case op_STI:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
-            mem_write(mem_read(reg[r_PC] + pc_offset), reg[r0]);
+            op_sti(instr);
 
             break;
         case op_STR:
