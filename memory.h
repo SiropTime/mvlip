@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 
-#include "utility.h"
 
 uint16_t memory[MEMORY_MAX];
 

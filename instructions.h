@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "utility.h"
-#include "registers.h"
 
 enum
 {

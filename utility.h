@@ -7,8 +7,6 @@
 #include <conio.h>
 #include <signal.h>
 
-#include "memory.h"
-
 uint16_t sign_extend(uint16_t x, int bit_count)
 {
     if ((x >> (bit_count -1)) & 1)

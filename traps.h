@@ -4,10 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "registers.h"
-#include "memory.h"
-#include "flags.h"
-
 enum
 {
     TRAP_GETC = 0x20,  /* get character from keyboard, not echoed onto the terminal */
