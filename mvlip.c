@@ -108,11 +108,7 @@ int main(int argc, const char* argv[])
 
             break;
         case op_STR:
-            uint16_t r0 = (instr >> 9) & 0x7;
-            uint16_t r1 = (instr >> 6) & 0x7;
-            uint16_t offset = sign_extend(instr & 0x3F, 6);
-
-            mem_write(reg[r1] + offset, reg[r0]);
+            op_str(instr);
 
             break;
         case op_TRAP:

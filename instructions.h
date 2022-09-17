@@ -161,4 +161,14 @@ void op_sti(uint16_t instr)
 
 }
 
+void op_str(uint16_t instr)
+{
+    uint16_t r0 = (instr >> 9) & 0x7;
+    uint16_t r1 = (instr >> 6) & 0x7;
+    uint16_t offset = sign_extend(instr & 0x3F, 6);
+
+    mem_write(reg[r1] + offset, reg[r0]);
+
+}
+
 #endif
