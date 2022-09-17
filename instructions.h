@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "utility.h"
+#include "registers.h"
 
 enum
 {
@@ -51,7 +52,7 @@ void op_add(uint16_t instr)
     update_flags(r0);
 }
 
-op_and(uint16_t instr)
+void op_and(uint16_t instr)
 {
     uint16_t r0 = (instr >> 9) & 0x7;
     uint16_t r1 = (instr >> 6) & 0x7;
@@ -72,7 +73,7 @@ op_and(uint16_t instr)
 }
 
 
-void op_not()
+void op_not(uint16_t instr)
 {
     uint16_t r0 = (instr >> 9) & 0x7;
     uint16_t r1 = (instr >> 6) & 0x7;

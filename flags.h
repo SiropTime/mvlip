@@ -1,6 +1,10 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
+#include <stdint.h>
+
+#include "registers.h"
+
 enum
 {
     FL_POS = 1 << 0, /* P */
